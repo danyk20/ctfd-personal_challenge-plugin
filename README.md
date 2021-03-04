@@ -9,7 +9,7 @@ Individual flag creates unique flag for each user which brings many advantages.
 ---
 ---
 1. Download CTFd using the command `$ git clone https://github.com/CTFd/CTFd.git`
-
+2. Checkout the correct version 3.2.1 `git checkout tags/3.2.1`
 
 ## Installation
 ---
