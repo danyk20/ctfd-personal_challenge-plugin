@@ -21,6 +21,18 @@ class IndividualFlag(Flags):
         super(IndividualFlag, self).__init__(**kwargs)
         self.initial = kwargs
 
+class Flag(Flags):
+    __mapper_args__ = {"polymorphic_identity": "static"}
+    def __init__(self, *args, **kwargs):
+        super(Flag, self).__init__(**kwargs)
+        self.initial = kwargs
+
+class Flag(Flags):
+    __mapper_args__ = {"polymorphic_identity": "regex"}
+    def __init__(self, *args, **kwargs):
+        super(Flag, self).__init__(**kwargs)
+        self.initial = kwargs
+
 class PersonalValueChallenge(BaseChallenge):
     id = challenge_type  # Unique identifier used to register challenges
     name = challenge_type  # Name of a challenge type
