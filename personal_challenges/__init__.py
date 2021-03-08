@@ -1,4 +1,6 @@
-from flask import Blueprint
+import json
+
+from flask import Blueprint, request
 
 from CTFd.models import Challenges, Flags, db
 from CTFd.plugins.flags import FlagException, get_flag_class
@@ -6,6 +8,7 @@ from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
+
 
 # do not forget to change challenge_type also in assets/create.html
 challenge_type = "personal"
@@ -89,7 +92,33 @@ class PersonalValueChallenge(BaseChallenge):
 
         return False, "Incorrect!"
 
+def init_loader():
+        if not len(request.args):
+            return '404 Error Not Found'
 
+        challange_id = str(request.args.get('challenge_id'))
+        flag = str(request.args.get('flag'))
+        user_id = str(request.args.get('user_id'))
+
+        req = json.loads("{}")
+        req["challenge_id"] = challange_id
+        req["content"] = flag
+        req["data"] = "Case Sensitive"
+        req["type"] = "individual"
+        req["user_id"] = user_id
+
+        try:
+            # fill IndividualFlags and Flags table
+            FlagModel = IndividualFlag
+            f = FlagModel(**req)
+            db.session.add(f)
+            db.session.commit()
+            db.session.close()
+
+        except Exception as e:
+            return {"success": False, "message": "Database Error :" + str(e)}
+
+        return {"success": True, "Flag_data": req}
 
 
 def load(app):
@@ -98,3 +127,7 @@ def load(app):
     register_plugin_assets_directory(
         app, base_path="/plugins/" + challenge_type + "_challenges/assets/"
     )
+    @app.route('/loader', methods=['GET'])
+    def view_faq():
+        print("som tu\n\n\n\n\n")
+        return init_loader()
