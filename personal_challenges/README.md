@@ -9,10 +9,7 @@ The current implementation works only with individual flags!
 Individual Flags can be created by APG app https://gitlab.fi.muni.cz/kypolab/theses/apg/kosc-automated-problem-generation-app .
 
 
-# Installation
+# Tests
 
-**REQUIRES: CTFd >= v1.2.0**
-
-1. Clone this repository to `CTFd/plugins`. It is important that the folder is
-   named `personal_challenges` so CTFd can serve the files in the `assets`
-   directory.
+0. Open cmd from running docker image of ctfd_ctfd_1.
+1. Run database insertion test run `$ python3 CTFd/plugins/personal_challenges/tests/populate.py`
