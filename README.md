@@ -17,10 +17,10 @@ Individual flag creates unique flag for each user which brings many advantages.
 ### Linux (Ubuntu/Debian)
 ---
 
-1. Navigate to directory where CTFd is stored `$ cd <path>`
+1. Navigate into CTFd directory `$ cd <path>/CTFd`
 2. Clone the project with `$ git clone https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin.git`
-3. Add 2 lines of code with  `$ echo "from CTFd.plugins.loader import loader_namespace\nCTFd_API_v1.add_namespace(loader_namespace, \"/loader\") " >> CTFd/CTFd/api/__init__.py `
-4. Copy downloaded plugin into CTFd `$ rsync -a --exclude='.*' CTFd-personal_challenge-plugin/. CTFd/CTFd/plugins/ && rm -rf CTFd-personal_challenge-plugin`
+3. Add 2 lines of code with  `$ echo "from CTFd.plugins.loader import loader_namespace\nCTFd_API_v1.add_namespace(loader_namespace, \"/loader\") " >> CTFd/api/__init__.py `
+4. Copy downloaded plugin into CTFd `$ mv -v CTFd-personal_challenge-plugin/. CTFd/plugins/ && rm -rf CTFd-personal_challenge-plugin`
 
 
 ## Usage

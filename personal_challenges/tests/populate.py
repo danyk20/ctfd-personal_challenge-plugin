@@ -1,4 +1,11 @@
 import random
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+path = os.path.dirname(current_dir).split("/")[:-3]
+parent_dir = "/".join(str(x) for x in path)
+sys.path.insert(0, parent_dir)
+os.chdir(parent_dir)
+
 from CTFd import create_app
 from CTFd.models import (Challenges, Users, Admins)
 from CTFd.plugins.personal_challenges import IndividualFlag
