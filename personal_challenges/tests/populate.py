@@ -7,7 +7,7 @@ sys.path.insert(0, parent_dir)
 os.chdir(parent_dir)
 
 from CTFd import create_app
-from CTFd.models import (Challenges, Users, Admins, Configs)
+from CTFd.models import (Challenges, Users, Admins, Configs, Pages)
 from CTFd.plugins.personal_challenges import IndividualFlag
 
 app = create_app()
@@ -40,6 +40,8 @@ def setup():
         db.session.add(event_description)
         db.session.add(event_user_mode)
         db.session.add(event_setup)
+        page = Pages(title=None, route="index", content="", draft=False)
+        db.session.add(page)
         db.session.commit()
         db.session.close()
 
@@ -49,9 +51,9 @@ def create_individual_flag(player_id=1, challenge_id=1):
         f = IndividualFlag(
             user_id=player_id + 1,
             challenge_id=challenge_id + 1,
-            content="case_sensitive",
+            content=names[player_id] + str(challenge_id),
             type="individual",
-            data=names[player_id] + str(challenge_id)
+            data="case_sensitive"
         )
         db.session.add(f)
         db.session.commit()
