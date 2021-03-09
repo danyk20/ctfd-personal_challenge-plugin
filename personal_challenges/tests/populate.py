@@ -89,13 +89,6 @@ def setup():
             # Create an empty index page
             page = Pages(title=None, route="index", content="", draft=False)
 
-            # Upload banner
-            default_ctf_banner_location = url_for("views.themes", path="img/logo.png")
-            ctf_banner = None
-            if ctf_banner:
-                f = upload_file(file=ctf_banner, page_id=page.id)
-                default_ctf_banner_location = url_for("views.files", path=f.location)
-
             # Splice in our banner
             index = f"""<div class="row">
                                     <div class="col-md-6 offset-md-3">
