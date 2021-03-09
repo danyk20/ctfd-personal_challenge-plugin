@@ -23,13 +23,6 @@ from CTFd.utils.email import (
     DEFAULT_VERIFICATION_EMAIL_BODY,
     DEFAULT_VERIFICATION_EMAIL_SUBJECT,
 )
-from CTFd.constants.config import (
-    AccountVisibilityTypes,
-    ChallengeVisibilityTypes,
-    ConfigTypes,
-    RegistrationVisibilityTypes,
-    ScoreVisibilityTypes,
-)
 from sqlalchemy.exc import IntegrityError
 from flask import session, url_for
 
@@ -124,18 +117,13 @@ def setup():
             page.content = index
 
             # Visibility
-            set_config(
-                ConfigTypes.CHALLENGE_VISIBILITY, ChallengeVisibilityTypes.PRIVATE
-            )
-            set_config(
-                ConfigTypes.REGISTRATION_VISIBILITY, RegistrationVisibilityTypes.PUBLIC
-            )
-            set_config(ConfigTypes.SCORE_VISIBILITY, ScoreVisibilityTypes.PUBLIC)
-            set_config(ConfigTypes.ACCOUNT_VISIBILITY, AccountVisibilityTypes.PUBLIC)
+            set_config("challenge_visibility", "private")
+            set_config("registration_visibility", "public")
+            set_config("score_visibility","public")
+            set_config("account_visibility", "public")
 
             # Verify emails
             set_config("verify_emails", None)
-
             set_config("mail_server", None)
             set_config("mail_port", None)
             set_config("mail_tls", None)
