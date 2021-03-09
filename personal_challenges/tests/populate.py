@@ -11,7 +11,6 @@ from CTFd.cache import cache
 from CTFd.models import (Challenges, Users, Admins, Configs, Pages)
 from CTFd.plugins.personal_challenges import IndividualFlag
 from CTFd.utils import config, get_config, set_config
-from CTFd.utils.security.csrf import generate_nonce
 from CTFd.utils.uploads import get_uploader, upload_file
 from CTFd.utils.email import (
     DEFAULT_PASSWORD_RESET_BODY,
@@ -24,7 +23,6 @@ from CTFd.utils.email import (
     DEFAULT_VERIFICATION_EMAIL_SUBJECT,
 )
 from sqlalchemy.exc import IntegrityError
-from flask import session, url_for
 
 app = create_app()
 
@@ -156,7 +154,6 @@ def setup():
                     "If you didn't request a password change you can reset your password here: {url}"
                 ),
             )
-
             set_config("setup", True)
 
             db = app.db
@@ -174,35 +171,6 @@ def setup():
 
             db.session.close()
             cache.clear()
-            # event_name = Configs(
-            #     key="ctf_name",
-            #     value="Kypo test game session"
-            # )
-            # event_description = Configs(
-            #     key="ctf_description",
-            #     value="Test game created in populate.py"
-            # )
-            # event_user_mode = Configs(
-            #     key="user_mode",
-            #     value="users"
-            # )
-            # event_setup = Configs(
-            #     key="setup",
-            #     value="1"
-            # )
-            # db.session.add(event_name)
-            # db.session.add(event_description)
-            # db.session.add(event_user_mode)
-            # db.session.add(event_setup)
-            # page = Pages(title=None, route="index", content="", draft=False)
-            # db.session.add(page)
-            # db.session.commit()
-            # db.session.close()
-
-
-
-
-
 
 
 def create_individual_flag(player_id=1, challenge_id=1):
@@ -272,8 +240,9 @@ def generate():
     for c in range(challenges):
         print("Generating challenge " + str(c))
         create_challenge(c)
-        for p in range(players):
-            print("Generating flag for player " + str(p) + " in challenge " + str(c))
-            create_individual_flag(p, c)
+        if sys.argv[1].__eq__("--flags"):
+            for p in range(players):
+                print("Generating flag for player " + str(p) + " in challenge " + str(c))
+                create_individual_flag(p, c)
 
 generate()
