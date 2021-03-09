@@ -1,5 +1,6 @@
 import random
-import os,sys,inspect
+import os, sys, inspect
+
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 path = os.path.dirname(current_dir).split("/")[:-3]
 parent_dir = "/".join(str(x) for x in path)
@@ -30,6 +31,7 @@ players = 10
 challenges = 10
 
 names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevin", "Alis"]
+
 
 def setup():
     if not config.is_setup():
@@ -209,7 +211,7 @@ def create_admin():
         adm = Admins(
             name="admin",
             password="admin",
-            email="admin@muni.cz" + str(random.randint(0,10000)),
+            email="admin@muni.cz" + str(random.randint(0, 10000)),
         )
         db.session.add(adm)
         db.session.commit()
@@ -222,7 +224,7 @@ def create_player(id=1):
         pl = Users(
             name=names[id],
             password="password",
-            email=names[id] + "@muni.cz" + str(random.randint(0,10000)),
+            email=names[id] + "@muni.cz" + str(random.randint(0, 10000)),
         )
         db.session.add(pl)
         db.session.commit()
@@ -240,9 +242,10 @@ def generate():
     for c in range(challenges):
         print("Generating challenge " + str(c))
         create_challenge(c)
-        if sys.argv[1].__eq__("--flags"):
+        if len(sys.argv) > 1 and sys.argv[1].__eq__("--flags"):
             for p in range(players):
                 print("Generating flag for player " + str(p) + " in challenge " + str(c))
                 create_individual_flag(p, c)
+
 
 generate()
