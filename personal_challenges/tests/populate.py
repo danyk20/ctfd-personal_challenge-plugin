@@ -7,7 +7,7 @@ sys.path.insert(0, parent_dir)
 os.chdir(parent_dir)
 
 from CTFd import create_app
-from CTFd.models import (Challenges, Users, Admins)
+from CTFd.models import (Challenges, Users, Admins, Configs)
 from CTFd.plugins.personal_challenges import IndividualFlag
 
 app = create_app()
@@ -17,6 +17,31 @@ challenges = 10
 
 names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevin", "Alis"]
 
+def setup():
+    with app.app_context():
+        db = app.db
+        event_name = Configs(
+            key="ctf_name",
+            value="Kypo test game session"
+        )
+        event_description = Configs(
+            key="ctf_description",
+            value="Test game created in populate.py"
+        )
+        event_user_mode = Configs(
+            key="user_mode",
+            value="users"
+        )
+        event_setup = Configs(
+            key="setup",
+            value="1"
+        )
+        db.session.add(event_name)
+        db.session.add(event_description)
+        db.session.add(event_user_mode)
+        db.session.add(event_setup)
+        db.session.commit()
+        db.session.close()
 
 def create_individual_flag(player_id=1, challenge_id=1):
     with app.app_context():
