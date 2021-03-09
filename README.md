@@ -45,10 +45,10 @@ Create game and you will be able to add Personal Challenges that use generated v
 ## Example
 
 ![login](/screenshots/login.png)
-![admin_panel](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/admin_panel.png?raw=true)
-![challenges](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/challenges.png)
-![create_challenge](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/create_challenge.png)
-![personal](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/personal.png)
-![visible](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/visible.png?raw=true)
-![done](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/done.png?raw=true)
+![admin_panel](screenshots/admin_panel.png)
+![challenges](/screenshots/challenges.png)
+![create_challenge](/screenshots/create_challenge.png)
+![personal](/screenshots/personal.png)
+![visible](/screenshots/visible.png)
+![done](/screenshots/done.png)
 
