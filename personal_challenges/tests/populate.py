@@ -35,138 +35,139 @@ names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevi
 
 def setup():
     if not config.is_setup():
-        if not session.get("nonce"):
-            session["nonce"] = generate_nonce()
-            # General
-            ctf_name = "Kypo game session"
-            ctf_description = "Demo test game"
-            user_mode = "users"
-            set_config("ctf_name", ctf_name)
-            set_config("ctf_description", ctf_description)
-            set_config("user_mode", user_mode)
+        with app.app_context():
+            if not session.get("nonce"):
+                session["nonce"] = generate_nonce()
+                # General
+                ctf_name = "Kypo game session"
+                ctf_description = "Demo test game"
+                user_mode = "users"
+                set_config("ctf_name", ctf_name)
+                set_config("ctf_description", ctf_description)
+                set_config("user_mode", user_mode)
 
-            # Style
-            ctf_logo = None
-            if ctf_logo:
-                f = upload_file(file=ctf_logo)
-                set_config("ctf_logo", f.location)
+                # Style
+                ctf_logo = None
+                if ctf_logo:
+                    f = upload_file(file=ctf_logo)
+                    set_config("ctf_logo", f.location)
 
-            ctf_small_icon = None
-            if ctf_small_icon:
-                f = upload_file(file=ctf_small_icon)
-                set_config("ctf_small_icon", f.location)
+                ctf_small_icon = None
+                if ctf_small_icon:
+                    f = upload_file(file=ctf_small_icon)
+                    set_config("ctf_small_icon", f.location)
 
-            theme = "core"
-            set_config("ctf_theme", theme)
-            theme_color = "black"
-            theme_header = get_config("theme_header")
-            if theme_color and bool(theme_header) is False:
-                # Uses {{ and }} to insert curly braces while using the format method
-                css = (
-                    '<style id="theme-color">\n'
-                    ":root {{--theme-color: {theme_color};}}\n"
-                    ".navbar{{background-color: var(--theme-color) !important;}}\n"
-                    ".jumbotron{{background-color: var(--theme-color) !important;}}\n"
-                    "</style>\n"
-                ).format(theme_color=theme_color)
-                set_config("theme_header", css)
+                theme = "core"
+                set_config("ctf_theme", theme)
+                theme_color = "black"
+                theme_header = get_config("theme_header")
+                if theme_color and bool(theme_header) is False:
+                    # Uses {{ and }} to insert curly braces while using the format method
+                    css = (
+                        '<style id="theme-color">\n'
+                        ":root {{--theme-color: {theme_color};}}\n"
+                        ".navbar{{background-color: var(--theme-color) !important;}}\n"
+                        ".jumbotron{{background-color: var(--theme-color) !important;}}\n"
+                        "</style>\n"
+                    ).format(theme_color=theme_color)
+                    set_config("theme_header", css)
 
-            # DateTime
-            start = ""
-            end = None
-            set_config("start", start)
-            set_config("end", end)
-            set_config("freeze", None)
+                # DateTime
+                start = ""
+                end = None
+                set_config("start", start)
+                set_config("end", end)
+                set_config("freeze", None)
 
-            # Administration
-            name = "admin"
-            email = "admin@muni.cz"
-            password = "admin"
+                # Administration
+                name = "admin"
+                email = "admin@muni.cz"
+                password = "admin"
 
-            admin = Admins(
-                name=name, email=email, password=password, type="admin", hidden=True
-            )
+                admin = Admins(
+                    name=name, email=email, password=password, type="admin", hidden=True
+                )
 
-            # Create an empty index page
-            page = Pages(title=None, route="index", content="", draft=False)
+                # Create an empty index page
+                page = Pages(title=None, route="index", content="", draft=False)
 
-            # Upload banner
-            default_ctf_banner_location = url_for("views.themes", path="img/logo.png")
-            ctf_banner = None
-            if ctf_banner:
-                f = upload_file(file=ctf_banner, page_id=page.id)
-                default_ctf_banner_location = url_for("views.files", path=f.location)
+                # Upload banner
+                default_ctf_banner_location = url_for("views.themes", path="img/logo.png")
+                ctf_banner = None
+                if ctf_banner:
+                    f = upload_file(file=ctf_banner, page_id=page.id)
+                    default_ctf_banner_location = url_for("views.files", path=f.location)
 
-            # Splice in our banner
-            index = f"""<div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <img class="w-100 mx-auto d-block" style="max-width: 500px;padding: 50px;padding-top: 14vh;" src="{default_ctf_banner_location}" />
-                    <h3 class="text-center">
-                        <p>A cool CTF platform from <a href="https://ctfd.io">ctfd.io</a></p>
-                        <p>Follow us on social media:</p>
-                        <a href="https://twitter.com/ctfdio"><i class="fab fa-twitter fa-2x" aria-hidden="true"></i></a>&nbsp;
-                        <a href="https://facebook.com/ctfdio"><i class="fab fa-facebook fa-2x" aria-hidden="true"></i></a>&nbsp;
-                        <a href="https://github.com/ctfd"><i class="fab fa-github fa-2x" aria-hidden="true"></i></a>
-                    </h3>
-                    <br>
-                    <h4 class="text-center">
-                        <a href="admin">Click here</a> to login and setup your CTF
-                    </h4>
-                </div>
-            </div>"""
-            page.content = index
+                # Splice in our banner
+                index = f"""<div class="row">
+                        <div class="col-md-6 offset-md-3">
+                            <img class="w-100 mx-auto d-block" style="max-width: 500px;padding: 50px;padding-top: 14vh;" src="{default_ctf_banner_location}" />
+                            <h3 class="text-center">
+                                <p>A cool CTF platform from <a href="https://ctfd.io">ctfd.io</a></p>
+                                <p>Follow us on social media:</p>
+                                <a href="https://twitter.com/ctfdio"><i class="fab fa-twitter fa-2x" aria-hidden="true"></i></a>&nbsp;
+                                <a href="https://facebook.com/ctfdio"><i class="fab fa-facebook fa-2x" aria-hidden="true"></i></a>&nbsp;
+                                <a href="https://github.com/ctfd"><i class="fab fa-github fa-2x" aria-hidden="true"></i></a>
+                            </h3>
+                            <br>
+                            <h4 class="text-center">
+                                <a href="admin">Click here</a> to login and setup your CTF
+                            </h4>
+                        </div>
+                    </div>"""
+                page.content = index
 
-            # Visibility
-            set_config("challenge_visibility", "private")
-            set_config("registration_visibility", "public")
-            set_config("score_visibility","public")
-            set_config("account_visibility", "public")
+                # Visibility
+                set_config("challenge_visibility", "private")
+                set_config("registration_visibility", "public")
+                set_config("score_visibility", "public")
+                set_config("account_visibility", "public")
 
-            # Verify emails
-            set_config("verify_emails", None)
-            set_config("mail_server", None)
-            set_config("mail_port", None)
-            set_config("mail_tls", None)
-            set_config("mail_ssl", None)
-            set_config("mail_username", None)
-            set_config("mail_password", None)
-            set_config("mail_useauth", None)
+                # Verify emails
+                set_config("verify_emails", None)
+                set_config("mail_server", None)
+                set_config("mail_port", None)
+                set_config("mail_tls", None)
+                set_config("mail_ssl", None)
+                set_config("mail_username", None)
+                set_config("mail_password", None)
+                set_config("mail_useauth", None)
 
-            # Set up default emails
-            set_config("verification_email_subject", DEFAULT_VERIFICATION_EMAIL_SUBJECT)
-            set_config("verification_email_body", DEFAULT_VERIFICATION_EMAIL_BODY)
+                # Set up default emails
+                set_config("verification_email_subject", DEFAULT_VERIFICATION_EMAIL_SUBJECT)
+                set_config("verification_email_body", DEFAULT_VERIFICATION_EMAIL_BODY)
 
-            set_config(
-                "successful_registration_email_subject",
-                DEFAULT_SUCCESSFUL_REGISTRATION_EMAIL_SUBJECT,
-            )
-            set_config(
-                "successful_registration_email_body",
-                DEFAULT_SUCCESSFUL_REGISTRATION_EMAIL_BODY,
-            )
+                set_config(
+                    "successful_registration_email_subject",
+                    DEFAULT_SUCCESSFUL_REGISTRATION_EMAIL_SUBJECT,
+                )
+                set_config(
+                    "successful_registration_email_body",
+                    DEFAULT_SUCCESSFUL_REGISTRATION_EMAIL_BODY,
+                )
 
-            set_config(
-                "user_creation_email_subject", DEFAULT_USER_CREATION_EMAIL_SUBJECT
-            )
-            set_config("user_creation_email_body", DEFAULT_USER_CREATION_EMAIL_BODY)
+                set_config(
+                    "user_creation_email_subject", DEFAULT_USER_CREATION_EMAIL_SUBJECT
+                )
+                set_config("user_creation_email_body", DEFAULT_USER_CREATION_EMAIL_BODY)
 
-            set_config("password_reset_subject", DEFAULT_PASSWORD_RESET_SUBJECT)
-            set_config("password_reset_body", DEFAULT_PASSWORD_RESET_BODY)
+                set_config("password_reset_subject", DEFAULT_PASSWORD_RESET_SUBJECT)
+                set_config("password_reset_body", DEFAULT_PASSWORD_RESET_BODY)
 
-            set_config(
-                "password_change_alert_subject",
-                "Password Change Confirmation for {ctf_name}",
-            )
-            set_config(
-                "password_change_alert_body",
-                (
-                    "Your password for {ctf_name} has been changed.\n\n"
-                    "If you didn't request a password change you can reset your password here: {url}"
-                ),
-            )
+                set_config(
+                    "password_change_alert_subject",
+                    "Password Change Confirmation for {ctf_name}",
+                )
+                set_config(
+                    "password_change_alert_body",
+                    (
+                        "Your password for {ctf_name} has been changed.\n\n"
+                        "If you didn't request a password change you can reset your password here: {url}"
+                    ),
+                )
 
-            set_config("setup", True)
-            with app.app_context():
+                set_config("setup", True)
+
                 db = app.db
                 try:
                     db.session.add(admin)
