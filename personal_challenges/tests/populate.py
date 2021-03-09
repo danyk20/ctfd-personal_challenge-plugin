@@ -100,6 +100,8 @@ def create_player(id=1):
 
 
 def generate():
+    print("Initializing setup...")
+    setup()
     print("Generating admin")
     create_admin()
     for p in range(players):
