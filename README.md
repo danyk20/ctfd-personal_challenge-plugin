@@ -44,11 +44,11 @@ Create game and you will be able to add Personal Challenges that use generated v
 
 ## Example
 
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/admin_panel.png)
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/admin_panel.png)
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/challenges.png)
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/create_challenge.png)
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/personal.png)
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/visible.png)
-![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/done.png)
+![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/admin_panel.png?raw=true)
+![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/admin_panel.png?raw=true)
+![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/challenges.png?raw=true)
+![view](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/create_challenge.png?raw=true)
+![alt text](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/personal.png?raw=true)
+![alt text](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/visible.png?raw=true)
+![alt text](https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin/blob/master/screenshots/done.png?raw=true)
 
