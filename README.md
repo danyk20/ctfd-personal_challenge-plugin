@@ -44,11 +44,11 @@ Create game and you will be able to add Personal Challenges that use generated v
 
 ## Example
 
-![login](/screenshots/login.png)
-![admin_panel](screenshots/admin_panel.png)
-![challenges](/screenshots/challenges.png)
-![create_challenge](/screenshots/create_challenge.png)
-![personal](/screenshots/personal.png)
-![visible](/screenshots/visible.png)
-![done](/screenshots/done.png)
+![login](/personal_challenges/screenshots/login.png)
+![admin_panel](/personal_challengesscreenshots/admin_panel.png)
+![challenges](/personal_challenges/screenshots/challenges.png)
+![create_challenge](/personal_challenges/screenshots/create_challenge.png)
+![personal](/personal_challenges/screenshots/personal.png)
+![visible](/personal_challenges/screenshots/visible.png)
+![done](/personal_challenges/screenshots/done.png)
 
