@@ -28,27 +28,3 @@ Individual flag creates unique flag for each user which brings many advantages.
 After the installation simply run the command `$ docker-compose up` in CTFd directory to run CTFd server.
 
 Or simply run the command `$ docker-compose -f /<absolut_path>/CTFd/docker-compose.yml up` to launch CTFd server.
-
-Create game and you will be able to add Personal Challenges that use generated values from Kosc-automated-problem-generation-app. 
-
-    0. Login as Admin
-    1. Navigate into Admin Panel
-    2. Pick Challenges
-    3. Click on "Create Challenge" button
-    4. Choose Personal type
-    5. Fill all fields
-    6. Click on "Create" button
-    7. Choose state Hidden/Visible
-    8. Click "Finish" button
-    9. Generate individuals flags using Kosc-automated-problem-generation-app
-
-## Example
-
-![login](/personal_challenges/screenshots/login.png)
-![admin_panel](/personal_challengesscreenshots/admin_panel.png)
-![challenges](/personal_challenges/screenshots/challenges.png)
-![create_challenge](/personal_challenges/screenshots/create_challenge.png)
-![personal](/personal_challenges/screenshots/personal.png)
-![visible](/personal_challenges/screenshots/visible.png)
-![done](/personal_challenges/screenshots/done.png)
-
