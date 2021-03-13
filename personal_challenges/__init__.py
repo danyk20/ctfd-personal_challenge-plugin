@@ -129,5 +129,4 @@ def load(app):
     )
     @app.route('/loader', methods=['GET'])
     def view_faq():
-        print("som tu\n\n\n\n\n")
         return init_loader()
