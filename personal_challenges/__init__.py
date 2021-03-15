@@ -36,6 +36,12 @@ class Flag(Flags):
         super(Flag, self).__init__(**kwargs)
         self.initial = kwargs
 
+class PersonalChallenge(Challenges):
+    __mapper_args__ = {"polymorphic_identity": "personal"}
+    def __init__(self, *args, **kwargs):
+        super(PersonalChallenge, self).__init__(**kwargs)
+        self.initial = kwargs["value"]
+
 class PersonalValueChallenge(BaseChallenge):
     id = challenge_type  # Unique identifier used to register challenges
     name = challenge_type  # Name of a challenge type
@@ -58,7 +64,7 @@ class PersonalValueChallenge(BaseChallenge):
         template_folder="templates",
         static_folder="assets",
     )
-    challenge_model = Challenges
+    challenge_model = PersonalChallenge
 
     @classmethod
     def attempt(cls, challenge, submission):
