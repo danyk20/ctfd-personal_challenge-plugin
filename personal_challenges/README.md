@@ -4,7 +4,7 @@ This CTFd plugin allows to create individual flag for each player.
 
 Within CTFd you are free to mix and match regular, dynamic and personal challenges .
 
-The current implementation of the personal challenge works if and only if individual flags!
+The current implementation of the personal challenge works if and only if individual flags are used!
 
 Individual flags can be created by APG app https://gitlab.fi.muni.cz/kypolab/theses/apg/kosc-automated-problem-generation-app .
 
