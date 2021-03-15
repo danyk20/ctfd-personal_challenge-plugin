@@ -229,7 +229,6 @@ def create_player(id=1):
         db.session.add(pl)
         db.session.commit()
         db.session.close()
-        db.session.expunge(pl)
 
 
 def generate():
