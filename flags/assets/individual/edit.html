@@ -1,0 +1,19 @@
+<label>
+	Individual Flag information<br>
+	<small>You can see detail info about flag here:</small>
+</label>
+<div class="form-group">
+    Content :  {{ content }}<br>
+</div>
+<div class="form-group">
+	Player ID :  {{ user_id }}<br>
+</div>
+<div class="form-group">
+    Sensitivity :  Case Sensitive<br>
+</div>
+<input type="hidden" name="type" value="individual">
+<input type="hidden" name="id" value="{{ id }}">
+<hr>
+<div class="form-group">
+	<button class="btn btn-success float-right">Close</button>
+</div>

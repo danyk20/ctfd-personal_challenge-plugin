@@ -127,12 +127,34 @@ def init_loader():
         return {"success": True, "Flag_data": req}
 
 
+def get_flag(flag_id):
+    flag = Flags.query.filter_by(id=flag_id).first_or_404()
+    if flag.type == "individual":
+        flag = IndividualFlag.query.filter_by(id=flag_id).first_or_404()
+    schema = FlagSchema()
+    response = schema.dump(flag)
+
+    if response.errors:
+        return {"success": False, "errors": response.errors}, 400
+
+    response.data["templates"] = get_flag_class(flag.type).templates
+    if flag.type == "individual":
+        response.data["user_id"] = str(flag.user_id)
+    else:
+        return old_flag_get(flag_id)
+    return {"success": True, "data": response.data}
+
 def load(app):
     upgrade()
     CHALLENGE_CLASSES[challenge_type] = PersonalValueChallenge
     register_plugin_assets_directory(
         app, base_path="/plugins/" + challenge_type + "_challenges/assets/"
     )
+
+    global  old_flag_get
+    old_flag_get = app.view_functions['api.flags_flag']
+    app.view_functions['api.flags_flag'] = get_flag
+
     @app.route('/loader', methods=['GET'])
     def view_faq():
         return init_loader()
