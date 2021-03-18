@@ -8,6 +8,7 @@ from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
+from CTFd.schemas.flags import FlagSchema
 
 
 # do not forget to change challenge_type also in assets/create.html
