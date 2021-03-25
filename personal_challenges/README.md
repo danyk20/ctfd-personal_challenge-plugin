@@ -36,12 +36,18 @@ Create game and you will be able to add Personal Challenges that use generated v
 ## Tests
 
 0. Open cmd from running docker image of `ctfd_ctfd_1`.
-1. Run database insertion test `$ python3 CTFd/plugins/personal_challenges/tests/populate.py [--flags]`
+1. Run database insertion test `$ python3 CTFd/plugins/personal_challenges/tests/populate.py [--flags] [num]`
 2. It is possible to log in using credentials username : `admin` password : `admin` on `http://localhost:8000/login`
 
 ``populate.py`` is small script to fill database with users, challenges, admin and skip setup with default values to test CTFd funtions
 
 `--flags` option add to database for each player and challenge one individual flag
+
+`num` option must be a positive number otherwise default value 1 will be used. This number sets dozens of players and challenges will be added into the database. 
+
+Example: `populate.py --flags 10` 
+
+It adds 100 players, 100 challenges and 10 000 flags (100 player * 100 challenges) into the database. 
 
 
 
