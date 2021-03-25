@@ -93,6 +93,9 @@ class PersonalValueChallenge(BaseChallenge):
                 if result == 0:
                     return True, "Correct"
                 elif result > 0 :
+                    f = open("cheaters.log", "a")
+                    f.write("Player " + str(submission["user_id"]) + " submit flag from player "+ str(result) +" .")
+                    f.close()
                     return False, "You have cheated from user : " + str(result) + " !!!"
             except FlagException as e:
                 return False, e.message
