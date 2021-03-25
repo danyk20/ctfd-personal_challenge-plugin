@@ -24,7 +24,7 @@ def log(cheater, origin, challenge):
     f = open(filename, append_write)
     f.write(
         "Player " + str(cheater) + " submit flag from player " + str(origin) + " in challenge " + str(
-            challenge.id) + ".\n")
+            challenge) + ".\n")
     f.close()
 
 
@@ -117,7 +117,15 @@ class PersonalValueChallenge(BaseChallenge):
         for flag in flags:
             try:
                 if flag.type != "individual":
-                    return super().attempt(challenge, submission_req)
+                    print("som dnu\n\n\n\n")
+                    print(submission)
+                    print(flag)
+                    if get_flag_class(flag.type).compare(flag, submission["submission"]):
+                        print("som spravne\n\n\n\n")
+                        return True, "Correct"
+                    else:
+                        print("som nespravne!\n\n\n\n")
+                        continue
                 result = get_flag_class(flag.type).compare(flag, submission)
                 if result == 0:
                     return True, "Correct"
@@ -126,7 +134,6 @@ class PersonalValueChallenge(BaseChallenge):
                     return False, "You have cheated from user : " + str(result) + " !!!"
             except FlagException as e:
                 return False, e.message
-
         return False, "Incorrect!"
 
 
