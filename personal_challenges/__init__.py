@@ -99,8 +99,6 @@ class PersonalValueChallenge(BaseChallenge):
         :param request: The request the user submitted
         :return: (boolean, string)
         """
-        submission_req = submission
-
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
 
         for i in range(len(flags)):
@@ -117,14 +115,9 @@ class PersonalValueChallenge(BaseChallenge):
         for flag in flags:
             try:
                 if flag.type != "individual":
-                    print("som dnu\n\n\n\n")
-                    print(submission)
-                    print(flag)
                     if get_flag_class(flag.type).compare(flag, submission["submission"]):
-                        print("som spravne\n\n\n\n")
                         return True, "Correct"
                     else:
-                        print("som nespravne!\n\n\n\n")
                         continue
                 result = get_flag_class(flag.type).compare(flag, submission)
                 if result == 0:
