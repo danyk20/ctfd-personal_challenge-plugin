@@ -1,5 +1,6 @@
 import random
 import os, sys, inspect
+import time
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 path = os.path.dirname(current_dir).split("/")[:-3]
@@ -30,7 +31,10 @@ app = create_app()
 players = 10
 challenges = 10
 
-names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevin", "Alis"]
+flags_test = False
+
+names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevin", "Alis", "Bob", "Alice", "Mat",
+         "Jan", "Isabel", "Vachen", "Dima", "Leo", "Raulf", "Sara", "Casto", "Jui", "Sam"]
 
 
 def setup():
@@ -181,7 +185,7 @@ def create_individual_flag(player_id=1, challenge_id=1):
         f = IndividualFlag(
             user_id=player_id + 1,
             challenge_id=challenge_id + 1,
-            content=names[player_id] + str(challenge_id),
+            content=names[player_id % len(names)] + str(challenge_id),
             type="individual",
             data="case_sensitive"
         )
@@ -211,7 +215,7 @@ def create_admin():
         adm = Admins(
             name="admin",
             password="admin",
-            email="admin@muni.cz" + str(random.randint(0, 10000)),
+            email="admin" + str(random.randint(0, 10000)) + "@muni.cz",
         )
         db.session.add(adm)
         db.session.commit()
@@ -222,16 +226,37 @@ def create_player(id=1):
     with app.app_context():
         db = app.db
         pl = Users(
-            name=names[id],
+            name=names[id % len(names)],
             password="password",
-            email=names[id] + "@muni.cz" + str(random.randint(0, 10000)),
+            email=names[id % len(names)] + str(random.randint(0, 100000)) + "@muni.cz" ,
         )
         db.session.add(pl)
         db.session.commit()
         db.session.close()
 
 
+def parse_input():
+    for a in sys.argv[1:]:
+        if a.__eq__("--flags"):
+            global flags_test
+            flags_test = True
+        elif a.isnumeric():
+            if int(a) > 0:
+                global players
+                players *= int(a)
+                global challenges
+                challenges *= int(a)
+            else:
+                sys.stderr.write("\n" * 10 + "Wrong input \"" + a + " \" ! \nYou can enter only positive integers.\n")
+        else:
+            sys.stderr.write("\n"*10 + "Unknown input \"" + a + " \" ! Continuing with default settings.\n")
+            time.sleep(5)
+
+
+
+
 def generate():
+    parse_input()
     print("Initializing setup...")
     setup()
     print("Generating admin")
@@ -242,7 +267,7 @@ def generate():
     for c in range(challenges):
         print("Generating challenge " + str(c))
         create_challenge(c)
-        if len(sys.argv) > 1 and sys.argv[1].__eq__("--flags"):
+        if flags_test:
             for p in range(players):
                 print("Generating flag for player " + str(p) + " in challenge " + str(c))
                 create_individual_flag(p, c)
