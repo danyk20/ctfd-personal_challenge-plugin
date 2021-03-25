@@ -100,7 +100,7 @@ class PersonalValueChallenge(BaseChallenge):
                     else:
                         append_write = 'w'  # make a new file if not
                     f = open(filename, append_write)
-                    f.write("Player " + str(submission["user_id"]) + " submit flag from player "+ str(result) +" .\n")
+                    f.write("Player " + str(submission["user_id"]) + " submit flag from player "+ str(result) +" in challenge " + str(challenge.id) + ".\n")
                     f.close()
                     return False, "You have cheated from user : " + str(result) + " !!!"
             except FlagException as e:
