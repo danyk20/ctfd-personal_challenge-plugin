@@ -1,4 +1,5 @@
 import json
+import os
 
 from flask import Blueprint, request
 
@@ -93,8 +94,13 @@ class PersonalValueChallenge(BaseChallenge):
                 if result == 0:
                     return True, "Correct"
                 elif result > 0 :
-                    f = open("cheaters.log", "a")
-                    f.write("Player " + str(submission["user_id"]) + " submit flag from player "+ str(result) +" .")
+                    filename = "/tmp/cheaters.log"
+                    if os.path.exists(filename):
+                        append_write = 'a'  # append if already exists
+                    else:
+                        append_write = 'w'  # make a new file if not
+                    f = open(filename, append_write)
+                    f.write("Player " + str(submission["user_id"]) + " submit flag from player "+ str(result) +" .\n")
                     f.close()
                     return False, "You have cheated from user : " + str(result) + " !!!"
             except FlagException as e:
