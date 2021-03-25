@@ -11,9 +11,22 @@ from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
 from CTFd.schemas.flags import FlagSchema
 
-
 # do not forget to change challenge_type also in assets/create.html
 challenge_type = "personal"
+
+
+def log(cheater, origin, challenge):
+    filename = "/tmp/cheaters.log"
+    if os.path.exists(filename):
+        append_write = 'a'
+    else:
+        append_write = 'w'
+    f = open(filename, append_write)
+    f.write(
+        "Player " + str(cheater) + " submit flag from player " + str(origin) + " in challenge " + str(
+            challenge.id) + ".\n")
+    f.close()
+
 
 class IndividualFlag(Flags):
     __mapper_args__ = {"polymorphic_identity": "individual"}
@@ -26,23 +39,30 @@ class IndividualFlag(Flags):
         super(IndividualFlag, self).__init__(**kwargs)
         self.initial = kwargs
 
+
 class Flag(Flags):
     __mapper_args__ = {"polymorphic_identity": "static"}
+
     def __init__(self, *args, **kwargs):
         super(Flag, self).__init__(**kwargs)
         self.initial = kwargs
+
 
 class Flag(Flags):
     __mapper_args__ = {"polymorphic_identity": "regex"}
+
     def __init__(self, *args, **kwargs):
         super(Flag, self).__init__(**kwargs)
         self.initial = kwargs
 
+
 class PersonalChallenge(Challenges):
     __mapper_args__ = {"polymorphic_identity": "personal"}
+
     def __init__(self, *args, **kwargs):
         super(PersonalChallenge, self).__init__(**kwargs)
         self.initial = kwargs["value"]
+
 
 class PersonalValueChallenge(BaseChallenge):
     id = challenge_type  # Unique identifier used to register challenges
@@ -79,8 +99,14 @@ class PersonalValueChallenge(BaseChallenge):
         :param request: The request the user submitted
         :return: (boolean, string)
         """
-        # submission = request.form or request.get_json()
-        flags = IndividualFlag.query.filter_by(challenge_id=challenge.id).all()
+        submission_req = submission
+
+        flags = Flags.query.filter_by(challenge_id=challenge.id).all()
+
+        for i in range(len(flags)):
+            if flags[i].type == "individual":
+                flags[i] = IndividualFlag.query.filter_by(id=flags[i].id).first_or_404()
+
         if submission.content_type != "application/json":
             submission = submission.form
         else:
@@ -90,51 +116,47 @@ class PersonalValueChallenge(BaseChallenge):
             return False, "There are no flags added to this challenge."
         for flag in flags:
             try:
+                if flag.type != "individual":
+                    return super().attempt(challenge, submission_req)
                 result = get_flag_class(flag.type).compare(flag, submission)
                 if result == 0:
                     return True, "Correct"
-                elif result > 0 :
-                    filename = "/tmp/cheaters.log"
-                    if os.path.exists(filename):
-                        append_write = 'a'  # append if already exists
-                    else:
-                        append_write = 'w'  # make a new file if not
-                    f = open(filename, append_write)
-                    f.write("Player " + str(submission["user_id"]) + " submit flag from player "+ str(result) +" in challenge " + str(challenge.id) + ".\n")
-                    f.close()
+                if result > 0:
+                    log(submission["user_id"], result, challenge.id)
                     return False, "You have cheated from user : " + str(result) + " !!!"
             except FlagException as e:
                 return False, e.message
 
         return False, "Incorrect!"
 
+
 def init_loader():
-        if not len(request.args):
-            return '404 Error Not Found'
+    if not len(request.args):
+        return '404 Error Not Found'
 
-        challange_id = str(request.args.get('challenge_id'))
-        flag = str(request.args.get('flag'))
-        user_id = str(request.args.get('user_id'))
+    challange_id = str(request.args.get('challenge_id'))
+    flag = str(request.args.get('flag'))
+    user_id = str(request.args.get('user_id'))
 
-        req = json.loads("{}")
-        req["challenge_id"] = challange_id
-        req["content"] = flag
-        req["data"] = "Case Sensitive"
-        req["type"] = "individual"
-        req["user_id"] = user_id
+    req = json.loads("{}")
+    req["challenge_id"] = challange_id
+    req["content"] = flag
+    req["data"] = "Case Sensitive"
+    req["type"] = "individual"
+    req["user_id"] = user_id
 
-        try:
-            # fill IndividualFlags and Flags table
-            FlagModel = IndividualFlag
-            f = FlagModel(**req)
-            db.session.add(f)
-            db.session.commit()
-            db.session.close()
+    try:
+        # fill IndividualFlags and Flags table
+        FlagModel = IndividualFlag
+        f = FlagModel(**req)
+        db.session.add(f)
+        db.session.commit()
+        db.session.close()
 
-        except Exception as e:
-            return {"success": False, "message": "Database Error :" + str(e)}
+    except Exception as e:
+        return {"success": False, "message": "Database Error :" + str(e)}
 
-        return {"success": True, "Flag_data": req}
+    return {"success": True, "Flag_data": req}
 
 
 def get_flag(flag_id):
@@ -154,6 +176,7 @@ def get_flag(flag_id):
         return old_flag_get(flag_id)
     return {"success": True, "data": response.data}
 
+
 def load(app):
     upgrade()
     CHALLENGE_CLASSES[challenge_type] = PersonalValueChallenge
@@ -161,7 +184,7 @@ def load(app):
         app, base_path="/plugins/" + challenge_type + "_challenges/assets/"
     )
 
-    global  old_flag_get
+    global old_flag_get
     old_flag_get = app.view_functions['api.flags_flag']
     app.view_functions['api.flags_flag'] = get_flag
 
