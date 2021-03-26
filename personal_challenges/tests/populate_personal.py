@@ -228,7 +228,7 @@ def create_player(id=1):
         pl = Users(
             name=names[id % len(names)],
             password="password",
-            email=names[id % len(names)] + str(random.randint(0, 100000)) + "@muni.cz" ,
+            email=names[id % len(names)] + str(random.randint(0, 100000)) + "@muni.cz",
         )
         db.session.add(pl)
         db.session.commit()
@@ -236,23 +236,21 @@ def create_player(id=1):
 
 
 def parse_input():
-    for a in sys.argv[1:]:
-        if a.__eq__("--flags"):
+    for i, arg in enumerate(sys.argv[1:]):
+        if arg.__eq__("--flags"):
             global flags_test
             flags_test = True
-        elif a.isnumeric():
-            if int(a) > 0:
-                global players
-                players *= int(a)
+        elif arg.isnumeric():
+            if sys.argv[i].__eq__("--challenges"):
                 global challenges
-                challenges *= int(a)
+                challenges = int(arg)
+            elif sys.argv[i].__eq__("--players"):
+                global players
+                players = int(arg)
+                pass
             else:
-                sys.stderr.write("\n" * 10 + "Wrong input \"" + a + " \" ! \nYou can enter only positive integers.\n")
-        else:
-            sys.stderr.write("\n"*10 + "Unknown input \"" + a + " \" ! Continuing with default settings.\n")
-            time.sleep(5)
-
-
+                sys.stderr.write("\n" * 10 + "Wrong input \"" + arg + " \" ! \n"
+                "You can enter only --challenges or --players followed by positive integers.\n")
 
 
 def generate():
