@@ -1,5 +1,6 @@
 import json
 import os
+import datetime
 
 from flask import Blueprint, request
 
@@ -15,16 +16,16 @@ from CTFd.schemas.flags import FlagSchema
 challenge_type = "personal"
 
 
-def log(cheater, origin, challenge):
-    filename = "/tmp/cheaters.log"
+def log(submission, origin, challenge):
+    filename = "/var/log/CTFd/cheaters.log"
     if os.path.exists(filename):
         append_write = 'a'
     else:
         append_write = 'w'
     f = open(filename, append_write)
     f.write(
-        "Player " + str(cheater) + " submit flag from player " + str(origin) + " in challenge " + str(
-            challenge) + ".\n")
+        str(submission["user_id"]) + " ; " + str(origin) + " ; " + str(submission["submission"]) + " ; " + str(
+            challenge) + " ; " + str(datetime.datetime.now()) + ";\n")
     f.close()
 
 
@@ -123,7 +124,7 @@ class PersonalValueChallenge(BaseChallenge):
                 if result == 0:
                     return True, "Correct"
                 if result > 0:
-                    log(submission["user_id"], result, challenge.id)
+                    log(submission, result, challenge.id)
                     return False, "You have cheated from user : " + str(result) + " !!!"
             except FlagException as e:
                 return False, e.message
