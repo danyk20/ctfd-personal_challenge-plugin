@@ -127,7 +127,7 @@ class PersonalValueChallenge(BaseChallenge):
                     return True, "Correct"
                 if result > 0:
                     log(submission, result, challenge.id)
-                    return False, "You have cheated from user : " + str(result) + " !!!"
+                    return False, "Incorrect!"
             except FlagException as e:
                 return False, e.message
         return False, "Incorrect!"
