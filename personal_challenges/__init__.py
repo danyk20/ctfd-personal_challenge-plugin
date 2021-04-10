@@ -12,6 +12,8 @@ from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
 from CTFd.schemas.flags import FlagSchema
 
+from CTFd.utils.user import get_ip
+
 # do not forget to change challenge_type also in assets/create.html
 challenge_type = "personal"
 
@@ -24,8 +26,8 @@ def log(submission, origin, challenge):
         append_write = 'w'
     f = open(filename, append_write)
     f.write(
-        str(submission["user_id"]) + " ; " + str(origin) + " ; " + str(submission["submission"]) + " ; " + str(
-            challenge) + " ; " + str(datetime.datetime.now()) + ";\n")
+        str(submission["user_id"]) + ";" + str(origin) + ";" + str(submission["submission"]) + ";" + str(
+            challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";" + get_ip() + ";\n")
     f.close()
 
 
