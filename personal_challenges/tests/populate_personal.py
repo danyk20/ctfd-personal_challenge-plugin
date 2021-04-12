@@ -81,7 +81,10 @@ def setup():
             set_config("end", end)
             set_config("freeze", None)
 
+
             # Administration
+            print("Creating initial admin")
+
             name = "admin"
             email = "admin@muni.cz"
             password = "admin"
@@ -257,8 +260,6 @@ def generate():
     parse_input()
     print("Initializing setup...")
     setup()
-    print("Generating admin")
-    create_admin()
     for p in range(players):
         print("Generating player " + str(p))
         create_player(p)

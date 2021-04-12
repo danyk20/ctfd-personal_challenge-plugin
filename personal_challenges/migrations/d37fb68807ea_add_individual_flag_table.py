@@ -29,3 +29,4 @@ def upgrade(op=None):
 
 def downgrade(op=None):
     op.drop_table("individual_flag")
+    op.create_foreign_key(None, "dynamic_challenge", "challenges", ["id"], ["id"])
