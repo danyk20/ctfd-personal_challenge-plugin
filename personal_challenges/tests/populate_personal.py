@@ -1,6 +1,5 @@
 import random
 import os, sys, inspect
-import time
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 path = os.path.dirname(current_dir).split("/")[:-3]
@@ -186,8 +185,8 @@ def create_individual_flag(player_id=1, challenge_id=1):
     with app.app_context():
         db = app.db
         f = IndividualFlag(
-            user_id=player_id + 1,
-            challenge_id=challenge_id + 1,
+            user_id=player_id,
+            challenge_id=challenge_id,
             content=names[player_id % len(names)] + str(challenge_id),
             type="individual",
             data="case_sensitive"
@@ -208,8 +207,11 @@ def create_challenge(id=1):
             type="personal"
         )
         db.session.add(chal)
+        db.session.flush()
+        id = chal.id
         db.session.commit()
         db.session.close()
+        return id
 
 
 def create_admin():
@@ -221,8 +223,11 @@ def create_admin():
             email="admin" + str(random.randint(0, 10000)) + "@muni.cz",
         )
         db.session.add(adm)
+        db.session.flush()
+        id = adm.id
         db.session.commit()
         db.session.close()
+        return id
 
 
 def create_player(id=1):
@@ -234,8 +239,11 @@ def create_player(id=1):
             email=names[id % len(names)] + str(random.randint(0, 100000)) + "@muni.cz",
         )
         db.session.add(pl)
+        db.session.flush()
+        id = pl.id
         db.session.commit()
         db.session.close()
+        return id
 
 
 def parse_input():
@@ -260,16 +268,18 @@ def generate():
     parse_input()
     print("Initializing setup...")
     setup()
+    players_id = []
+    challenges_id = []
     for p in range(players):
         print("Generating player " + str(p))
-        create_player(p)
+        players_id.append(create_player(p))
     for c in range(challenges):
         print("Generating challenge " + str(c))
-        create_challenge(c)
+        challenges_id.append(create_challenge(c))
         if flags_test:
             for p in range(players):
                 print("Generating flag for player " + str(p) + " in challenge " + str(c))
-                create_individual_flag(p, c)
+                create_individual_flag(players_id[p], challenges_id[c])
 
 
 generate()
