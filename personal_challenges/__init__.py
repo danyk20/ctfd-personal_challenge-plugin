@@ -111,7 +111,6 @@ class PersonalValueChallenge(BaseChallenge):
                 if res:
                     temp.append(res)
                 else:
-                    db.session.
                     Flags.query.filter_by(id=flags[i].id).delete()
 
         flags = temp
