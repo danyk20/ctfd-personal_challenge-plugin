@@ -14,8 +14,6 @@ from CTFd.schemas.flags import FlagSchema
 
 from CTFd.utils.user import get_ip
 
-from sqlalchemy.orm import backref
-
 # do not forget to change challenge_type also in assets/create.html
 challenge_type = "personal"
 
