@@ -14,6 +14,8 @@ from CTFd.schemas.flags import FlagSchema
 
 from CTFd.utils.user import get_ip
 
+from sqlalchemy.orm import backref
+
 # do not forget to change challenge_type also in assets/create.html
 challenge_type = "personal"
 
@@ -103,10 +105,19 @@ class PersonalValueChallenge(BaseChallenge):
         :return: (boolean, string)
         """
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
+        temp = []
 
         for i in range(len(flags)):
             if flags[i].type == "individual":
-                flags[i] = IndividualFlag.query.filter_by(id=flags[i].id).first_or_404()
+                res = IndividualFlag.query.filter_by(id=flags[i].id).first()
+                if res:
+                    temp.append(res)
+                else:
+                    db.session.
+                    Flags.query.filter_by(id=flags[i].id).delete()
+
+        flags = temp
+        db.session.commit()
 
         if submission.content_type != "application/json":
             submission = submission.form
