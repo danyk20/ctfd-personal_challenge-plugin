@@ -147,14 +147,14 @@ def init_loader():
 
     challange_id = str(request.args.get('challenge_id'))
     flag = str(request.args.get('flag'))
-    user_id = str(request.args.get('user_id'))
+    user_email = str(request.args.get('user_email'))
 
     req = json.loads("{}")
     req["challenge_id"] = challange_id
     req["content"] = flag
     req["data"] = "Case Sensitive"
     req["type"] = "individual"
-    req["user_id"] = user_id
+    req["user_id"] = get_user_id(user_email)
 
     try:
         # fill IndividualFlags and Flags table
@@ -186,7 +186,7 @@ def get_flag(flag_id):
 
     response.data["templates"] = get_flag_class(flag.type).templates
     if flag.type == "individual":
-        response.data["user_id"] = str(get_user_id(flag.user_mail))
+        response.data["user_id"] = str(flag.user_id)
     else:
         return old_flag_get(flag_id)
     return {"success": True, "data": response.data}
