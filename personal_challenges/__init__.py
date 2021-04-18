@@ -6,7 +6,8 @@ from flask import Blueprint, request
 
 from CTFd.models import Challenges, Flags, db, Users
 from CTFd.plugins.flags import FlagException, get_flag_class
-from CTFd.plugins import register_plugin_assets_directory
+from CTFd.plugins import register_plugin_assets_directory, bypass_csrf_protection
+from CTFd.utils.decorators import admins_only
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
@@ -25,9 +26,24 @@ def log(submission, origin, challenge):
     else:
         append_write = 'w'
     f = open(filename, append_write)
+    who = get_user_mail(submission["user_id"])
+    from_whom = get_user_mail(submission["submission"])
     f.write(
-        str(submission["user_id"]) + ";" + str(origin) + ";" + str(submission["submission"]) + ";" + str(
+        str(who) + ";" + str(origin) + ";" + str(from_whom) + ";" + str(
             challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";" + get_ip() + ";\n")
+    f.close()
+
+
+def log_recieved_flag(sender_mail, sender_ip, flag, challenge):
+    filename = "/var/log/CTFd/uploaded.log"
+    if os.path.exists(filename):
+        append_write = 'a'
+    else:
+        append_write = 'w'
+    f = open(filename, append_write)
+    f.write(
+        str(sender_mail) + ";" + str(sender_ip) + ";" + str(flag) + ";" + str(
+            challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";\n")
     f.close()
 
 
@@ -141,16 +157,15 @@ class PersonalValueChallenge(BaseChallenge):
         return False, "Incorrect!"
 
 
-def init_loader():
-    if not len(request.args):
-        return '404 Error Not Found'
+def init_store():
 
-    challange_id = str(request.args.get('challenge_id'))
-    flag = str(request.args.get('flag'))
-    user_email = str(request.args.get('user_email'))
+    challenge_id = str(request.form.get('challenge_id'))
+    flag = str(request.form.get('flag'))
+    user_email = str(request.form.get('user_email'))
+    user_ip = request.remote_addr
 
     req = json.loads("{}")
-    req["challenge_id"] = challange_id
+    req["challenge_id"] = challenge_id
     req["content"] = flag
     req["data"] = "Case Sensitive"
     req["type"] = "individual"
@@ -163,15 +178,23 @@ def init_loader():
         db.session.add(f)
         db.session.commit()
         db.session.close()
+        log_recieved_flag(user_email, user_ip, flag, challenge_id)
+
 
     except Exception as e:
         return {"success": False, "message": "Database Error :" + str(e)}
 
     return {"success": True, "Flag_data": req}
 
+
 def get_user_id(mail):
     user = Users.query.filter_by(email=mail).first()
     return user.id
+
+
+def get_user_mail(id):
+    user = Users.query.filter_by(id=id).first()
+    return user.email
 
 
 def get_flag(flag_id):
@@ -203,6 +226,7 @@ def load(app):
     old_flag_get = app.view_functions['api.flags_flag']
     app.view_functions['api.flags_flag'] = get_flag
 
-    @app.route('/loader', methods=['GET'])
-    def view_faq():
-        return init_loader()
+    @app.route('/loader', methods=['POST'])
+    @bypass_csrf_protection
+    def store():
+        return init_store()
