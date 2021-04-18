@@ -4,7 +4,7 @@ import datetime
 
 from flask import Blueprint, request
 
-from CTFd.models import Challenges, Flags, db
+from CTFd.models import Challenges, Flags, db, Users
 from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
@@ -169,6 +169,10 @@ def init_loader():
 
     return {"success": True, "Flag_data": req}
 
+def get_user_id(mail):
+    user = Users.query.filter_by(email=mail).first()
+    return user.id
+
 
 def get_flag(flag_id):
     flag = Flags.query.filter_by(id=flag_id).first_or_404()
@@ -182,7 +186,7 @@ def get_flag(flag_id):
 
     response.data["templates"] = get_flag_class(flag.type).templates
     if flag.type == "individual":
-        response.data["user_id"] = str(flag.user_id)
+        response.data["user_id"] = str(get_user_id(flag.user_mail))
     else:
         return old_flag_get(flag_id)
     return {"success": True, "data": response.data}
