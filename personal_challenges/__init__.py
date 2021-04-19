@@ -161,14 +161,21 @@ def init_store():
     challenge_id = str(request.form.get('challenge_id'))
     flag = str(request.form.get('flag'))
     user_email = str(request.form.get('user_email'))
+    user_id = get_user_id(user_email)
     user_ip = request.remote_addr
+
+    flags_list = IndividualFlag.query.filter_by(user_id = user_id).all()
+    for f in flags_list:
+        if f and Flags.query.filter_by(id = f.id).first().challenge_id == int(challenge_id):
+            return {"success": False, "message": "Flag was already uploaded", "uploaded": True}
+
 
     req = json.loads("{}")
     req["challenge_id"] = challenge_id
     req["content"] = flag
     req["data"] = "Case Sensitive"
     req["type"] = "individual"
-    req["user_id"] = get_user_id(user_email)
+    req["user_id"] = user_id
 
     try:
         # fill IndividualFlags and Flags table
@@ -181,9 +188,9 @@ def init_store():
 
 
     except Exception as e:
-        return {"success": False, "message": "Database Error :" + str(e)}
+        return {"success": False, "message": "Database Error :" + str(e), "uploaded": False}
 
-    return {"success": True, "Flag_data": req}
+    return {"success": True, "Flag_data": req, "uploaded": True}
 
 
 def get_user_id(mail):
