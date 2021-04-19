@@ -164,6 +164,8 @@ def init_store():
     user_id = get_user_id(user_email)
     user_ip = request.remote_addr
 
+    log_recieved_flag(user_email, user_ip, flag, challenge_id)
+
     flags_list = IndividualFlag.query.filter_by(user_id = user_id).all()
     for f in flags_list:
         if f and Flags.query.filter_by(id = f.id).first().challenge_id == int(challenge_id):
@@ -184,7 +186,6 @@ def init_store():
         db.session.add(f)
         db.session.commit()
         db.session.close()
-        log_recieved_flag(user_email, user_ip, flag, challenge_id)
 
 
     except Exception as e:
