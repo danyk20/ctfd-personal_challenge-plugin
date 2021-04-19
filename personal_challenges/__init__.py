@@ -26,9 +26,9 @@ def log(submission, origin, challenge):
         append_write = 'w'
     f = open(filename, append_write)
     who = get_user_mail(submission["user_id"])
-    from_whom = get_user_mail(submission["submission"])
+    from_whom = get_user_mail(origin)
     f.write(
-        str(who) + ";" + str(origin) + ";" + str(from_whom) + ";" + str(
+        str(who) + ";" + str(from_whom) + ";" + str(submission["submission"]) + ";" + str(
             challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";" + get_ip() + ";\n")
     f.close()
 
