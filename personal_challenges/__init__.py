@@ -7,7 +7,6 @@ from flask import Blueprint, request
 from CTFd.models import Challenges, Flags, db, Users
 from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins import register_plugin_assets_directory, bypass_csrf_protection
-from CTFd.utils.decorators import admins_only
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
