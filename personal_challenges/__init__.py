@@ -205,6 +205,8 @@ def get_user_mail(id):
 
 
 def get_flag(flag_id):
+    if request.method != 'GET':
+        return old_flag_get(flag_id)
     flag = Flags.query.filter_by(id=flag_id).first_or_404()
     if flag.type == "individual":
         flag = IndividualFlag.query.filter_by(id=flag_id).first_or_404()
