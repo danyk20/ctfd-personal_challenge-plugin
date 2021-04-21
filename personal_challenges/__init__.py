@@ -233,7 +233,7 @@ def load(app):
     old_flag_get = app.view_functions['api.flags_flag']
     app.view_functions['api.flags_flag'] = get_flag
 
-    @app.route('/loader', methods=['POST'])
+    @app.route('/store', methods=['POST'])
     @bypass_csrf_protection
     def store():
         return init_store()
