@@ -35,14 +35,24 @@ def log(submission, origin, challenge):
 
 def log_recieved_flag(sender_mail, sender_ip, flag, challenge):
     filename = "/var/log/CTFd/uploaded.log"
+    string_log = str(sender_mail) + ";" + str(sender_ip) + ";" + str(flag) + ";" + str(
+            challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";\n"
     if os.path.exists(filename):
         append_write = 'a'
+
+        if os.path.exists("/var/log/CTFd/.recent_update_log.log"):
+            f = open("/var/log/CTFd/.recent_update_log.log", 'r')
+            if f.readline() == string_log:
+                f.close()
+                return
+            f.close()
+        f = open("/var/log/CTFd/.recent_update_log.log", 'w')
+        f.write(string_log)
+        f.close()
     else:
         append_write = 'w'
     f = open(filename, append_write)
-    f.write(
-        str(sender_mail) + ";" + str(sender_ip) + ";" + str(flag) + ";" + str(
-            challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";\n")
+    f.write(string_log)
     f.close()
 
 
