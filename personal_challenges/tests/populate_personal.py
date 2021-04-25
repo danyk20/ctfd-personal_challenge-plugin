@@ -247,7 +247,7 @@ def parse_input():
                            default="10")
     my_parser.add_argument('-p', '--players', action='store', help='number of players to be added into database',
                            default="10")
-    my_parser.add_argument('-f', '--flags', action='store_true', help="add flag for each user and each challenge")
+    my_parser.add_argument('-f', '--flags', action='store_true', help="add an individual flag for each user and each challenge")
     global input_arg
     input_arg = my_parser.parse_args()
 
