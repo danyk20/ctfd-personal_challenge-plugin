@@ -166,6 +166,9 @@ def init_store():
 
     log_recieved_flag(user_email, user_ip, flag, challenge_id)
 
+    if user_id == 0:
+        return {"success": False, "message": "User does not exist.", "uploaded": False}
+
     flags_list = IndividualFlag.query.filter_by(user_id = user_id).all()
     for f in flags_list:
         if f and Flags.query.filter_by(id = f.id).first().challenge_id == int(challenge_id):
@@ -196,7 +199,10 @@ def init_store():
 
 def get_user_id(mail):
     user = Users.query.filter_by(email=mail).first()
-    return user.id
+    if user:
+        return user.id
+    else:
+        return 0
 
 
 def get_user_mail(id):
