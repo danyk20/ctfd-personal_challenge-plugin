@@ -1,5 +1,4 @@
-import random
-import os, sys, inspect
+import os, sys, inspect, argparse, random
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 path = os.path.dirname(current_dir).split("/")[:-3]
@@ -26,11 +25,7 @@ from CTFd.utils.email import (
 from sqlalchemy.exc import IntegrityError
 
 app = create_app()
-
-players = 10
-challenges = 10
-
-flags_test = False
+input_arg = None
 
 names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevin", "Alis", "Bob", "Alice", "Mat",
          "Jan", "Isabel", "Vachen", "Dima", "Leo", "Raulf", "Sara", "Casto", "Jui", "Sam"]
@@ -79,7 +74,6 @@ def setup():
             set_config("start", start)
             set_config("end", end)
             set_config("freeze", None)
-
 
             # Administration
             print("Creating initial admin")
@@ -247,21 +241,15 @@ def create_player(id=1):
 
 
 def parse_input():
-    for i, arg in enumerate(sys.argv[1:]):
-        if arg.__eq__("--flags"):
-            global flags_test
-            flags_test = True
-        elif arg.isnumeric():
-            if sys.argv[i].__eq__("--challenges"):
-                global challenges
-                challenges = int(arg)
-            elif sys.argv[i].__eq__("--players"):
-                global players
-                players = int(arg)
-                pass
-            else:
-                sys.stderr.write("\n" * 10 + "Wrong input \"" + arg + " \" ! \n"
-                "You can enter only --challenges or --players followed by positive integers.\n")
+    my_parser = argparse.ArgumentParser()
+    my_parser.version = '1.0'
+    my_parser.add_argument('-c', '--challenges', action='store', help='number of challenges to be added into database',
+                           default="10")
+    my_parser.add_argument('-p', '--players', action='store', help='number of players to be added into database',
+                           default="10")
+    my_parser.add_argument('-f', '--flags', action='store_true', help="add flag for each user and each challenge")
+    global input_arg
+    input_arg = my_parser.parse_args()
 
 
 def generate():
@@ -270,14 +258,14 @@ def generate():
     setup()
     players_id = []
     challenges_id = []
-    for p in range(players):
+    for p in range(int(input_arg.players)):
         print("Generating player " + str(p))
         players_id.append(create_player(p))
-    for c in range(challenges):
+    for c in range(int(input_arg.challenges)):
         print("Generating challenge " + str(c))
         challenges_id.append(create_challenge(c))
-        if flags_test:
-            for p in range(players):
+        if input_arg.flags:
+            for p in range(int(input_arg.players)):
                 print("Generating flag for player " + str(p) + " in challenge " + str(c))
                 create_individual_flag(players_id[p], challenges_id[c])
 
