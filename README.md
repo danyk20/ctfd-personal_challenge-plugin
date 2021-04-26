@@ -21,6 +21,12 @@ Individual flag creates unique flag for each user which brings many advantages.
 2. Clone the project with `$ git clone https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin.git`
 3. Copy downloaded plugin into CTFd `$ cp -R -L -f ctfd-personal_challenge-plugin/* CTFd/plugins/ && rm -rf ctfd-personal_challenge-plugin`
 
+## Update
+
+1. Navigate into CTFd directory `$ cd <path>/CTFd`
+2. Clone the project with `$ git pull https://gitlab.fi.muni.cz/kypolab/theses/apg/ctfd-personal_challenge-plugin.git`
+3. Copy downloaded updated plugin into CTFd `$ cp -R -L -f ctfd-personal_challenge-plugin/* CTFd/plugins/ && rm -rf ctfd-personal_challenge-plugin`
+
 
 ## Usage
 ---
