@@ -129,6 +129,8 @@ class PersonalValueChallenge(BaseChallenge):
         """
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
         temp = []
+        correct_flag = False
+        flag_owners = []
 
         for i in range(len(flags)):
             if flags[i].type == "individual":
@@ -157,12 +159,16 @@ class PersonalValueChallenge(BaseChallenge):
                         continue
                 result = get_flag_class(flag.type).compare(flag, submission)
                 if result == 0:
-                    return True, "Correct"
+                    correct_flag = True
                 if result > 0:
-                    log(submission, result, challenge.id)
-                    return False, "Incorrect!"
+                    flag_owners.append(result)
             except FlagException as e:
                 return False, e.message
+
+        for owner in flag_owners:
+            log(submission, owner, challenge.id)
+        if correct_flag:
+                return True, "Correct"
         return False, "Incorrect!"
 
 
