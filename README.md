@@ -23,7 +23,7 @@ Individual flag creates unique flag for each user, that brings many advantages.
 
 ## Update
 
-0. Navigate into CTFd directory `$ cd <path>/CTFd`
+0. Navigate into the CTFd directory `$ cd <path>/CTFd`
 1. Navigate into the plugins directory `$ cd /CTFd/plugins`
 2. Pull new version of the project with `$ git pull`
 
