@@ -3,7 +3,7 @@
 ---
 Plugin to give CTFd the ability to work with individual flags which are included.
 
-Individual flag creates unique flag for each user which brings many advantages.
+Individual flag creates unique flag for each user, that brings many advantages.
 
 ## Prerequisites
 ---
@@ -23,12 +23,13 @@ Individual flag creates unique flag for each user which brings many advantages.
 
 ## Update
 
-1. Navigate into CTFd directory `$ cd <path>/CTFd/CTFd/plugins`
+0. Navigate into CTFd directory `$ cd <path>/CTFd`
+1. Navigate into the plugins directory `$ cd /CTFd/plugins`
 2. Pull new version of the project with `$ git pull`
 
 ## Usage
 ---
 ---
-After the installation simply run the command `$ docker-compose up` in CTFd directory to run CTFd server.
+After the installation, simply run the command `$ docker-compose up` in the CTFd directory to run the CTFd server.
 
-Or simply run the command `$ docker-compose -f /<absolut_path>/CTFd/docker-compose.yml up` to launch CTFd server.
+Or simply run the command `$ docker-compose -f /<absolut_path>/CTFd/docker-compose.yml up` to launch the CTFd server.
