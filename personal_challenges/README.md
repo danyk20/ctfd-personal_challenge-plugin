@@ -1,6 +1,6 @@
 # Personal Challenges for CTFd
 
-This CTFd plugin allows creating individual flag for each player.
+This CTFd plugin allows creating an individual flag for each player.
 
 Within CTFd you are free to mix and match regular, dynamic and personal challenges.
 
@@ -17,11 +17,11 @@ Create a game, and you will be able to add Personal Challenges that use generate
     2. Pick Challenges
     3. Click on "Create Challenge" button
     4. Choose Personal type
-    5. Fill all fields
+    5. Fill in all fields
     6. Click on "Create" button
     7. Choose state Hidden/Visible
     8. Click "Finish" button
-    9. Generate individuals flags using Kosc-automated-problem-generation-app
+    9. Generate individual flags using Kosc-automated-problem-generation-app
 
 ## Example
 
@@ -39,7 +39,7 @@ Create a game, and you will be able to add Personal Challenges that use generate
 1. Run database insertion test `$ python3 CTFd/plugins/personal_challenges/tests/populate_personal.py [--flags] [--players <number_of_players>] [--challenges <number_of_challenges>]`.
 2. It is possible to log in using credentials username : `admin` password : `admin` on `http://localhost:8000/login`.
 
-``populate_personal.py`` is small script to fill database with users, challenges, admin and skip setup with default values to test CTFd functions.
+``populate_personal.py`` is small script to fill up database with users, challenges, admin and skip setup with default values to test CTFd functions.
 
 `--flags` option adds to database for each player and challenge one individual flag.
 
