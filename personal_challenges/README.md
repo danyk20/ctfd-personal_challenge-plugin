@@ -35,6 +35,8 @@ Create a game, and you will be able to add Personal Challenges that use generate
 
 ## Tests
 
+### Populate
+
 0. Open cmd from running docker image of `ctfd_ctfd_1`.
 1. Run database insertion test `$ python3 CTFd/plugins/personal_challenges/tests/populate_personal.py [--flags] [--players <number_of_players>] [--challenges <number_of_challenges>]`.
 2. It is possible to log in using credentials username : `admin` password : `admin` on `http://localhost:8000/login`.
@@ -50,6 +52,24 @@ Create a game, and you will be able to add Personal Challenges that use generate
 Example: `populate_personal.py --flags --players 16 --challenges 3` 
 
 It adds 16 players, 3 challenges and 48 flags (16 players * 3 challenges) into the database. 
+
+### Store interface test
+
+0. Open cmd from fresh running docker image with **empty** database : `ctfd_ctfd_1`.
+1. Run database store interface test `$ python3 CTFd/plugins/personal_challenges/tests/store_test.py [--players <number_of_players>] [--challenges <number_of_challenges>] [--url <url>]`.
+2. It is possible to log in using credentials username : `admin` password : `admin` to manually delete test data after test is done.
+
+``store_test.py`` is small script to fill up database with users, challenges, admin and skip setup with default values to test CTFd store interface functions.
+
+`--players <number_of_players>` option must contain a positive number otherwise default 100 players will be added to database. 
+
+`--challenges <number_of_challenges>` option must contain a positive number otherwise default 100 challenges will be added to database.
+
+`--url <url>` option must contain url of currently running CTFd server that we want to test
+
+Example: `store_test.py --players 16 --challenges 5` 
+
+It adds 1 admin, 2 * 16 players, 3 + 2 * 5 challenges but only 80 flags (16 players * 5 challenges) into the database. 
 
 
 

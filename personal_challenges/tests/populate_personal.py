@@ -253,7 +253,6 @@ def parse_input():
 
 
 def generate():
-    parse_input()
     print("Initializing setup...")
     setup()
     players_id = []
@@ -269,5 +268,7 @@ def generate():
                 print("Generating flag for player " + str(p) + " in challenge " + str(c))
                 create_individual_flag(players_id[p], challenges_id[c])
 
+parse_input()
 
-generate()
+if __name__ == "__main__":
+    generate()
