@@ -11,136 +11,275 @@ from CTFd.plugins.challenges import CHALLENGE_CLASSES, BaseChallenge
 from CTFd.plugins.migrations import upgrade
 from CTFd.utils.user import get_current_user
 from CTFd.schemas.flags import FlagSchema
-
 from CTFd.utils.user import get_ip
 
-# do not forget to change challenge_type also in assets/create.html
-challenge_type = "personal"
+CHALLENGE_TYPE = "personal"
+OLD_FLAG_GETTER = None
 
 
 def log(submission, origin, challenge):
+    """
+        Function to log suspicious activity that may reveal cheating.
+
+            Parameters
+                ----------
+                submission : dict
+                    submission data
+
+                origin : int
+                    player ID
+
+                challenge : int
+                    challenge ID
+
+            Returns
+                -------
+                None
+    """
     filename = "/var/log/CTFd/cheaters.log"
     if os.path.exists(filename):
         append_write = 'a'
     else:
         append_write = 'w'
-    f = open(filename, append_write)
-    who = get_user_mail(submission["user_id"])
-    from_whom = get_user_mail(origin)
-    f.write(
-        str(who) + ";" + str(from_whom) + ";" + str(submission["submission"]) + ";" + str(
-            challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";" + get_ip() + ";\n")
-    f.close()
+    with open(filename, append_write) as file:
+        who = get_user_mail(submission["user_id"])
+        from_whom = get_user_mail(origin)
+        file.write(
+            str(who) + ";" + str(from_whom) + ";" + str(submission["submission"]) + ";"
+            + str(challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]"))
+            + ";" + get_ip() + ";\n")
 
 
 def log_recieved_flag(sender_mail, sender_ip, flag, challenge):
-    filename = "/var/log/CTFd/uploaded.log"
-    string_log = str(sender_mail) + ";" + str(sender_ip) + ";" + str(flag) + ";" + str(
-            challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";\n"
-    if os.path.exists(filename):
-        append_write = 'a'
+    """
+        Function to log recived flags post request trying to upload flag.
 
-        if os.path.exists("/var/log/CTFd/.recent_update_log.log"):
-            f = open("/var/log/CTFd/.recent_update_log.log", 'r')
-            if f.readline() == string_log:
-                f.close()
+            Parameters
+                ----------
+                sender_mail : String
+                    Email address of player who sent post request
+
+                sender_ip : String
+                    IP address of player who sent post request
+
+                flag : int
+                    flag content
+
+                challenge : int
+                    challenge ID
+
+            Returns
+                -------
+                None
+    """
+    string_log = str(sender_mail) + ";" + str(sender_ip) + ";" \
+                 + str(flag) + ";" + str(challenge) + ";" \
+                 + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";\n"
+
+    if os.path.isfile("/var/log/CTFd/.recent_update_log.log"):
+        with open("/var/log/CTFd/.recent_update_log.log", 'r') as last_log:
+            if last_log.readline() == string_log:
                 return
-            f.close()
-        f = open("/var/log/CTFd/.recent_update_log.log", 'w')
-        f.write(string_log)
-        f.close()
-    else:
-        append_write = 'w'
-    f = open(filename, append_write)
-    f.write(string_log)
-    f.close()
+    with open("/var/log/CTFd/.recent_update_log.log", 'w') as last_log:
+        last_log.write(string_log)
+    with open("/var/log/CTFd/uploaded.log", 'a') as log_file:
+        log_file.write(string_log)
 
 
 class IndividualFlag(Flags):
+    """
+        A class to represent a individual flag model in database.
+        ...
+
+            Attributes
+            ----------
+            __mapper_args__ : dict
+                what type of flag is this class for
+
+            id : int
+            flag ID
+
+            user_id : int
+            owner ID
+
+            Methods
+            -------
+
+
+    """
     __mapper_args__ = {"polymorphic_identity": "individual"}
     id = db.Column(
         db.Integer, db.ForeignKey("flags.id", ondelete="CASCADE"), primary_key=True
     )
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
 
-    def __init__(self, *args, **kwargs):
-        super(IndividualFlag, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.initial = kwargs
 
 
 class Flag(Flags):
+    """
+        A class to represent a static flag model in database.
+        ...
+
+            Attributes
+            ----------
+            __mapper_args__ : dict
+                what type of flag is this class for
+
+            Methods
+            -------
+    """
     __mapper_args__ = {"polymorphic_identity": "static"}
 
-    def __init__(self, *args, **kwargs):
-        super(Flag, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.initial = kwargs
 
 
 class Flag(Flags):
+    """
+        A class to represent a regex flag model in database.
+        ...
+
+            Attributes
+            ----------
+            __mapper_args__ : dict
+                what type of flag is this class for
+
+            Methods
+            -------
+    """
     __mapper_args__ = {"polymorphic_identity": "regex"}
 
-    def __init__(self, *args, **kwargs):
-        super(Flag, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.initial = kwargs
 
 
 class PersonalChallenge(Challenges):
+    """
+        A class to represent a personal challenges model in database.
+        ...
+
+            Attributes
+            ----------
+            __mapper_args__ : dict
+                what type of flag is this class for
+
+            Methods
+            -------
+    """
     __mapper_args__ = {"polymorphic_identity": "personal"}
 
-    def __init__(self, *args, **kwargs):
-        super(PersonalChallenge, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.initial = kwargs["value"]
 
 
 class PersonalValueChallenge(BaseChallenge):
-    id = challenge_type  # Unique identifier used to register challenges
-    name = challenge_type  # Name of a challenge type
-    templates = {  # Handlebars templates used for each aspect of challenge editing & viewing
-        "create": "/plugins/" + challenge_type + "_challenges/assets/create.html",
-        "update": "/plugins/" + challenge_type + "_challenges/assets/update.html",
-        "view": "/plugins/" + challenge_type + "_challenges/assets/view.html",
+    """
+        A class to represent a personal challenges model in database.
+        ...
+
+            Attributes
+            ----------
+            id : String
+                Unique identifier used to register challenges
+
+            name : String
+                Name of a challenge type
+
+            templates : dict
+                Handlebars templates used for each aspect of challenge editing & viewing
+
+            scripts : dict
+                Scripts that are loaded when a template is loaded
+
+            route : String
+                Route at which files are accessible. This must be registered using
+                register_plugin_assets_directory()
+
+            blueprint : Blueprint
+                blueprint used to access the static_folder directory
+
+            challenge_model : PersonalValueChallenge
+                reference on class type
+
+            Methods
+            -------
+    """
+    id = CHALLENGE_TYPE
+    name = CHALLENGE_TYPE
+    templates = {
+        "create": "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/create.html",
+        "update": "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/update.html",
+        "view": "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/view.html",
     }
-    scripts = {  # Scripts that are loaded when a template is loaded
-        "create": "/plugins/" + challenge_type + "_challenges/assets/create.js",
-        "update": "/plugins/" + challenge_type + "_challenges/assets/update.js",
-        "view": "/plugins/" + challenge_type + "_challenges/assets/view.js",
+    scripts = {
+        "create": "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/create.js",
+        "update": "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/update.js",
+        "view": "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/view.js",
     }
-    # Route at which files are accessible. This must be registered using register_plugin_assets_directory()
-    route = "/plugins/" + challenge_type + "_challenges/assets/"
-    # Blueprint used to access the static_folder directory.
+    route = "/plugins/" + CHALLENGE_TYPE + "_challenges/assets/"
     blueprint = Blueprint(
-        challenge_type + "_challenges",
+        CHALLENGE_TYPE + "_challenges",
         __name__,
         template_folder="templates",
         static_folder="assets",
     )
     challenge_model = PersonalChallenge
 
+    @staticmethod
+    def clean_individual_flags(flags):
+        """
+        This static method remove partly deleted flags from databse and return complete ones.
+        ...
+             Parameters
+                ----------
+                flags : list
+                    list of flags from database
+
+            Returns
+                -------
+                list
+                    list of complete flags
+        """
+        result = []
+        for current_flag in flags:
+            if current_flag.type == "individual":
+                res = IndividualFlag.query.filter_by(id=current_flag.id).first()
+                if res:
+                    result.append(res)
+                else:
+                    Flags.query.filter_by(id=current_flag.id).delete()
+        return result
+
     @classmethod
     def attempt(cls, challenge, submission):
         """
-        This method is used to check whether a given input is right or wrong. It does not make any changes and should
-        return a boolean for correctness and a string to be shown to the user. It is also in charge of parsing the
+        This method is used to check whether a given input is right or wrong.
+        It does not make any changes and should return a boolean for correctness
+        and a string to be shown to the user. It is also in charge of parsing the
         user's input from the request itself.
+        ...
+             Parameters
+                ----------
+                challenge : Challenge
+                    The Challenge object from the database
+                submission : request
+                    The request the user submitted
 
-        :param challenge: The Challenge object from the database
-        :param request: The request the user submitted
-        :return: (boolean, string)
+            Returns
+                -------
+                (boolean, String)
+                    ( is correct, message to show)
         """
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
-        temp = []
         correct_flag = False
         flag_owners = []
-
-        for i in range(len(flags)):
-            if flags[i].type == "individual":
-                res = IndividualFlag.query.filter_by(id=flags[i].id).first()
-                if res:
-                    temp.append(res)
-                else:
-                    Flags.query.filter_by(id=flags[i].id).delete()
-
-        flags = temp
+        flags = cls.clean_individual_flags(flags)
         db.session.commit()
 
         if submission.content_type != "application/json":
@@ -155,25 +294,34 @@ class PersonalValueChallenge(BaseChallenge):
                 if flag.type != "individual":
                     if get_flag_class(flag.type).compare(flag, submission["submission"]):
                         return True, "Correct"
-                    else:
-                        continue
+                    continue
                 result = get_flag_class(flag.type).compare(flag, submission)
                 if result == 0:
                     correct_flag = True
                 if result > 0:
                     flag_owners.append(result)
-            except FlagException as e:
-                return False, e.message
+            except FlagException as err:
+                return False, err.message
 
         for owner in flag_owners:
             log(submission, owner, challenge.id)
         if correct_flag:
-                return True, "Correct"
+            return True, "Correct"
         return False, "Incorrect!"
 
 
 def init_store():
+    """
+        Function to initialize the store listener.
 
+             Parameters
+                ----------
+
+            Returns
+                -------
+                dict
+                   request response
+    """
     challenge_id = str(request.form.get('challenge_id'))
     flag = str(request.form.get('flag'))
     user_email = str(request.form.get('user_email'))
@@ -185,11 +333,11 @@ def init_store():
     if user_id == 0:
         return {"success": False, "message": "User does not exist.", "uploaded": False}
 
-    flags_list = IndividualFlag.query.filter_by(user_id = user_id).all()
-    for f in flags_list:
-        if f and Flags.query.filter_by(id = f.id).first().challenge_id == int(challenge_id):
+    flags_list = IndividualFlag.query.filter_by(user_id=user_id).all()
+    for current_flag in flags_list:
+        if current_flag and Flags.query.filter_by(id=current_flag.id).first().challenge_id \
+                == int(challenge_id):
             return {"success": False, "message": "Flag was already uploaded", "uploaded": True}
-
 
     req = json.loads("{}")
     req["challenge_id"] = challenge_id
@@ -201,34 +349,74 @@ def init_store():
     try:
         # fill IndividualFlags and Flags table
         FlagModel = IndividualFlag
-        f = FlagModel(**req)
-        db.session.add(f)
+        flag_model = FlagModel(**req)
+        db.session.add(flag_model)
         db.session.commit()
         db.session.close()
 
 
-    except Exception as e:
-        return {"success": False, "message": "Database Error :" + str(e), "uploaded": False}
+    except Exception as err:
+        return {"success": False, "message": "Database Error :" + str(err), "uploaded": False}
 
     return {"success": True, "Flag_data": req, "uploaded": True}
 
 
 def get_user_id(mail):
+    """
+        Function to get user ID from mail.
+            Parameters
+                ----------
+                mail : String
+                    email
+
+            Returns
+                -------
+                int :
+                    user ID
+
+
+    """
     user = Users.query.filter_by(email=mail).first()
     if user:
         return user.id
-    else:
-        return 0
+    return 0
 
 
-def get_user_mail(id):
-    user = Users.query.filter_by(id=id).first()
+def get_user_mail(user_id):
+    """
+         Function to get user mail from ID.
+
+            Parameters
+                ----------
+                user_id : int
+                    user ID
+
+            Returns
+                -------
+                dict
+                    String :
+                    user email
+    """
+    user = Users.query.filter_by(id=user_id).first()
     return user.email
 
 
 def get_flag(flag_id):
+    """
+        Function to get flag with given ID via request.
+
+            Parameters
+                ----------
+                flag_id : int
+                    flag ID
+
+            Returns
+                -------
+                dict :
+                    request response
+    """
     if request.method != 'GET':
-        return old_flag_get(flag_id)
+        return OLD_FLAG_GETTER(flag_id)
     flag = Flags.query.filter_by(id=flag_id).first_or_404()
     if flag.type == "individual":
         flag = IndividualFlag.query.filter_by(id=flag_id).first_or_404()
@@ -242,19 +430,32 @@ def get_flag(flag_id):
     if flag.type == "individual":
         response.data["user_id"] = str(flag.user_id)
     else:
-        return old_flag_get(flag_id)
+        return OLD_FLAG_GETTER(flag_id)
     return {"success": True, "data": response.data}
 
 
 def load(app):
+    """
+        Function to load this script into app.
+
+            Parameters
+                ----------
+                app : Flask
+                    a CTFd application
+
+            Returns
+                -------
+                None
+    """
+
     upgrade()
-    CHALLENGE_CLASSES[challenge_type] = PersonalValueChallenge
+    CHALLENGE_CLASSES[CHALLENGE_TYPE] = PersonalValueChallenge
     register_plugin_assets_directory(
-        app, base_path="/plugins/" + challenge_type + "_challenges/assets/"
+        app, base_path="/plugins/" + CHALLENGE_TYPE + "_challenges/assets/"
     )
 
-    global old_flag_get
-    old_flag_get = app.view_functions['api.flags_flag']
+    global OLD_FLAG_GETTER
+    OLD_FLAG_GETTER = app.view_functions['api.flags_flag']
     app.view_functions['api.flags_flag'] = get_flag
 
     @app.route('/store', methods=['POST'])
