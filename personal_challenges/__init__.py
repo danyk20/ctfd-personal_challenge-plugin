@@ -36,12 +36,8 @@ def log(submission, origin, challenge):
                 -------
                 None
     """
-    filename = "/var/log/CTFd/cheaters.log"
-    if os.path.exists(filename):
-        append_write = 'a'
-    else:
-        append_write = 'w'
-    with open(filename, append_write) as file:
+    filename = "/var/log/CTFd/" + PersonalValueChallenge.cheaters_log_file + ".log"
+    with open(filename, 'a') as file:
         who = get_user_mail(submission["user_id"])
         from_whom = get_user_mail(origin)
         file.write(
@@ -50,7 +46,7 @@ def log(submission, origin, challenge):
             + ";" + get_ip() + ";\n")
 
 
-def log_recieved_flag(sender_mail, sender_ip, flag, challenge):
+def log_received_flag(sender_mail, sender_ip, flag, challenge):
     """
         Function to log recived flags post request trying to upload flag.
 
@@ -76,13 +72,16 @@ def log_recieved_flag(sender_mail, sender_ip, flag, challenge):
                  + str(flag) + ";" + str(challenge) + ";" \
                  + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]")) + ";\n"
 
-    if os.path.isfile("/var/log/CTFd/.recent_update_log.log"):
-        with open("/var/log/CTFd/.recent_update_log.log", 'r') as last_log:
+    if os.path.isfile("/var/log/CTFd/.recent_" + PersonalValueChallenge.upload_log_file
+                      + "_log.log"):
+        with open("/var/log/CTFd/.recent_" + PersonalValueChallenge.upload_log_file
+                  + "_log.log", 'r') as last_log:
             if last_log.readline() == string_log:
                 return
-    with open("/var/log/CTFd/.recent_update_log.log", 'w') as last_log:
+    with open("/var/log/CTFd/.recent_" + PersonalValueChallenge.upload_log_file
+              + "_log.log", 'w') as last_log:
         last_log.write(string_log)
-    with open("/var/log/CTFd/uploaded.log", 'a') as log_file:
+    with open("/var/log/CTFd/" + PersonalValueChallenge.upload_log_file + ".log", 'a') as log_file:
         log_file.write(string_log)
 
 
@@ -207,6 +206,12 @@ class PersonalValueChallenge(BaseChallenge):
             challenge_model : PersonalValueChallenge
                 reference on class type
 
+            cheaters_log_file : String
+                name of log file containing potential cheaters players
+
+            upload_log_file : String
+                name of log file containing all attempts to upload flag
+
             Methods
             -------
     """
@@ -231,6 +236,9 @@ class PersonalValueChallenge(BaseChallenge):
     )
     challenge_model = PersonalChallenge
 
+    cheaters_log_file = "cheaters"
+    upload_log_file = "uploaded"
+
     @staticmethod
     def clean_individual_flags(flags):
         """
@@ -246,15 +254,15 @@ class PersonalValueChallenge(BaseChallenge):
                 list
                     list of complete flags
         """
-        result = []
+        complete_flags = []
         for current_flag in flags:
             if current_flag.type == "individual":
                 res = IndividualFlag.query.filter_by(id=current_flag.id).first()
                 if res:
-                    result.append(res)
+                    complete_flags.append(res)
                 else:
                     Flags.query.filter_by(id=current_flag.id).delete()
-        return result
+        return complete_flags
 
     @classmethod
     def attempt(cls, challenge, submission):
@@ -328,9 +336,9 @@ def init_store():
     user_id = get_user_id(user_email)
     user_ip = request.remote_addr
 
-    log_recieved_flag(user_email, user_ip, flag, challenge_id)
+    log_received_flag(user_email, user_ip, flag, challenge_id)
 
-    if user_id == 0:
+    if not user_id:
         return {"success": False, "message": "User does not exist.", "uploaded": False}
 
     flags_list = IndividualFlag.query.filter_by(user_id=user_id).all()
