@@ -40,15 +40,14 @@ def log(submission, origin, challenge):
     with open(filename, 'a') as file:
         who = get_user_mail(submission["user_id"])
         from_whom = get_user_mail(origin)
-        file.write(
-            str(who) + ";" + str(from_whom) + ";" + str(submission["submission"]) + ";"
+        file.write(str(who) + ";" + str(from_whom) + ";" + str(submission["submission"]) + ";"
             + str(challenge) + ";" + str(datetime.datetime.now().strftime("[%d/%m/%Y %H:%M:%S]"))
             + ";" + get_ip() + ";\n")
 
 
 def log_received_flag(sender_mail, sender_ip, flag, challenge):
     """
-        Function to log recived flags post request trying to upload flag.
+        Function to log received flags post request trying to upload flag.
 
             Parameters
                 ----------
@@ -242,7 +241,7 @@ class PersonalValueChallenge(BaseChallenge):
     @staticmethod
     def clean_individual_flags(flags):
         """
-        This static method remove partly deleted flags from databse and return complete ones.
+        This static method remove partly deleted flags from database and return only complete ones.
         ...
              Parameters
                 ----------
@@ -277,12 +276,12 @@ class PersonalValueChallenge(BaseChallenge):
                 challenge : Challenge
                     The Challenge object from the database
                 submission : request
-                    The request the user submitted
+                    The submitted request by player
 
             Returns
                 -------
                 (boolean, String)
-                    ( is correct, message to show)
+                    (is flag correct, message to show)
         """
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
         correct_flag = False
