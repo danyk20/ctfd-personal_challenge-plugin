@@ -20,41 +20,75 @@ class BaseFlag(object):
     def compare(self, saved, provided):
         return True
 
+
 class CTFdIndividualFlag(BaseFlag):
+    """
+    A class to represent a individual flag logic.
+    ...
+
+        Attributes
+        ----------
+        name : String
+            flag type name
+
+        templates : dict
+            Nunjucks templates used for key editing & viewing
+
+        Methods
+        -------
+        compare(chal_key_obj, provided):
+            Method to check if submitted flag is correct.
+    """
     name = "individual"
-    templates = {  # Nunjucks templates used for key editing & viewing
+    templates = {
         "create": "/plugins/flags/assets/individual/create.html",
         "update": "/plugins/flags/assets/individual/edit.html",
     }
 
     @staticmethod
     def compare(chal_key_obj, provided):
-        user_id = provided.get("user_id") # id of player who entered flag
-        if user_id is None:
-            sys.stderr.write("User id value is missing! \n You have probably forgotten to add `request_data[\"user_id\"] = str(session[\"id\"])` on line 464 in ctfd/api/v1/challenges.py . ")
+        """
+                Static method to check if submitted flag is correct.
+
+                Parameters
+                    ----------
+                    chal_key_obj : Flag
+                        row from database
+
+                    provided : dict
+                        submission data
+
+                Returns
+                    -------
+                    int
+                        flag owner ID if was submitted shared flag,
+                        if the flag is correct 0 otherwise -1
+
+        """
+        submitter_id = provided.get("user_id")
+        if submitter_id is None:
+            sys.stderr.write(
+                "ID of player who submitted flag is missing! Cannot check the flag!")
             return -1
-        flag = provided["submission"] # entered flag by user
-        saved = chal_key_obj.content # flag saved in database
-        data = chal_key_obj.data # case_insensitive or case_sensitive
-        owner = chal_key_obj.user_id # this particular flag belongs to
+        submitted_flag = provided["submission"]
+        saved_flag = chal_key_obj.content
+        case_sensitivity = chal_key_obj.data
+        flag_owner = chal_key_obj.user_id
 
         # is flag correct
-        if len(saved) != len(flag):
+        if len(saved_flag) != len(submitted_flag):
             return -1
         result = 0
-        if data == "case_insensitive":
-            for x, y in zip(saved.lower(), flag.lower()):
-                result |= ord(x) ^ ord(y)
-        else:
-            for x, y in zip(saved, flag):
-                result |= ord(x) ^ ord(y)
+        if case_sensitivity == "case_insensitive":
+            submitted_flag = submitted_flag.lower()
+        for x, y in zip(saved_flag, submitted_flag):
+            result |= ord(x) ^ ord(y)
         if result == 0:
             # is it player's flag
-            if owner == int(user_id):
+            if flag_owner == int(submitter_id):
                 return 0
-            else:
-                # cheated from owner
-                return owner
+            # cheated from owner
+            return flag_owner
         return -1
 
 
@@ -100,13 +134,14 @@ class CTFdRegexFlag(BaseFlag):
                 res = re.match(saved, provided, re.IGNORECASE)
             else:
                 res = re.match(saved, provided)
+        # TODO: this needs plugin improvements. See #1425.
         except re.error as e:
-            raise FlagException("Regex parse error occurred") from e
+            raise FlagException("Regex parse error occured") from e
 
         return res and res.group() == provided
 
 
-FLAG_CLASSES = {"static": CTFdStaticFlag, "regex": CTFdRegexFlag,  "individual": CTFdIndividualFlag}
+FLAG_CLASSES = {"static": CTFdStaticFlag, "regex": CTFdRegexFlag, "individual": CTFdIndividualFlag}
 
 
 def get_flag_class(class_id):
