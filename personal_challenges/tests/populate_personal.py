@@ -25,7 +25,7 @@ from CTFd.utils.email import (
 from sqlalchemy.exc import IntegrityError
 
 app = create_app()
-input_arg = None
+INPUT_ARG = None
 
 names = ["Daniel", "Peter", "John", "Ela", "Lili", "Ron", "Harry", "Jack", "Kevin", "Alis", "Bob", "Alice", "Mat",
          "Jan", "Isabel", "Vachen", "Dima", "Leo", "Raulf", "Sara", "Casto", "Jui", "Sam"]
@@ -248,7 +248,7 @@ def parse_input():
     my_parser.add_argument('-p', '--players', action='store', help='number of players to be added into database',
                            default="10")
     my_parser.add_argument('-f', '--flags', action='store_true', help="add an individual flag for each user and each challenge")
-    global input_arg
+    global INPUT_ARG
     input_arg = my_parser.parse_args()
 
 
@@ -257,14 +257,14 @@ def generate():
     setup()
     players_id = []
     challenges_id = []
-    for p in range(int(input_arg.players)):
+    for p in range(int(INPUT_ARG.players)):
         print("Generating player " + str(p))
         players_id.append(create_player(p))
-    for c in range(int(input_arg.challenges)):
+    for c in range(int(INPUT_ARG.challenges)):
         print("Generating challenge " + str(c))
         challenges_id.append(create_challenge(c))
-        if input_arg.flags:
-            for p in range(int(input_arg.players)):
+        if INPUT_ARG.flags:
+            for p in range(int(INPUT_ARG.players)):
                 print("Generating flag for player " + str(p) + " in challenge " + str(c))
                 create_individual_flag(players_id[p], challenges_id[c])
 

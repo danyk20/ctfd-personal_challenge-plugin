@@ -3,7 +3,7 @@
 ---
 Plugin to give CTFd the ability to work with individual flags which are included.
 
-Individual flag creates unique flag for each user, that brings many advantages.
+Individual flag creates one unique flag for each user per challenge, which brings many advantages (e.g. reveal and reduce solution sharing). 
 
 ## Prerequisites
 ---

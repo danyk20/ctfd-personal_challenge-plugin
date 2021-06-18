@@ -38,7 +38,8 @@ def already_uploaded(data):
     for d in data:
         responds.append(requests.post(input_arg.url + "/store", data=d).json())
 
-    assert not responds[0]["success"] and responds[0]["uploaded"] and responds[0]["message"] == "Flag was already uploaded"
+    assert not responds[0]["success"] and responds[0]["uploaded"] and responds[0][
+        "message"] == "Flag was already uploaded"
     assert not responds[1]["success"] and not responds[1]["uploaded"] and responds[1][
         "message"] == "User does not exist."
     assert not responds[2]["success"] and not responds[2]["uploaded"] and responds[2][
@@ -93,7 +94,8 @@ def test():
         "message"] == "User does not exist."
     assert not responds[3]["success"] and not responds[3]["uploaded"] and responds[3][
         "message"] == "User does not exist."
-    assert not responds[4]["success"] and responds[4]["uploaded"] and responds[4]["message"] == "Flag was already uploaded"
+    assert not responds[4]["success"] and responds[4]["uploaded"] and responds[4][
+        "message"] == "Flag was already uploaded"
     print("Successfully stored flag for admin empty database.")
 
     add_challenges_into_db(1)
