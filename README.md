@@ -1,4 +1,4 @@
-# CTFd Personal Challenge plugin 
+# CTFd Personal Challenge plugin
 ---
 ---
 Plugin to give CTFd the ability to work with individual flags which are included.
